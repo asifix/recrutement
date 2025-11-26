@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 10000;
 // ✅ VARIABLES D'ENVIRONNEMENT AVEC VALEURS PAR DÉFAUT POUR DEBUG
 const JWT_SECRET = process.env.JWT_SECRET || 'votre_secret_super_securise_changez_moi';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'; // ✅ Mot de passe en clair pour debug
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1Lemniscate#'; // ✅ Mot de passe en clair pour debug
 
 // Middleware
 app.use(helmet({
