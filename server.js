@@ -10,10 +10,14 @@ const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'votre_secret_super_securise_changez_moi';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2a$10$V5DLv6.5q7.8Q9p0q1r2.uJkLmNpPqRrSsTtUvVwXyZzA1B2C3D4E';
+
+// ✅ CORRECTION DU PORT POUR RENDER
+const PORT = process.env.PORT || 10000;
+
+// ✅ IDENTIFIANTS DIRECTS POUR DEBUG
+const JWT_SECRET = 'votre_secret_super_securise_changez_moi';
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'admin123'; // Mot de passe en clair temporairement
 
 // Middleware
 app.use(helmet({
@@ -50,7 +54,6 @@ const DATA_DIR = 'data';
 const CANDIDATES_FILE = path.join(DATA_DIR, 'candidates.json');
 const OFFER_FILE = path.join(DATA_DIR, 'offer.json');
 const ABOUT_FILE = path.join(DATA_DIR, 'about.json');
-const ADMIN_FILE = path.join(DATA_DIR, 'admin.json');
 
 // Initialisation des fichiers de données
 async function initializeDataFiles() {
@@ -103,9 +106,9 @@ async function initializeDataFiles() {
       await fs.writeFile(ABOUT_FILE, JSON.stringify(defaultAbout, null, 2));
     }
 
-    console.log('Fichiers de données initialisés avec succès');
+    console.log('✅ Fichiers de données initialisés avec succès');
   } catch (error) {
-    console.error('Erreur lors de l\'initialisation des fichiers:', error);
+    console.error('❌ Erreur lors de l\'initialisation des fichiers:', error);
   }
 }
 
@@ -163,20 +166,19 @@ app.post('/api/submit', upload.fields([
       candidateId: newCandidate.id
     });
   } catch (error) {
-    console.error('Erreur soumission candidature:', error);
+    console.error('❌ Erreur soumission candidature:', error);
     res.status(500).json({ error: 'Erreur lors de l\'envoi de la candidature' });
   }
 });
 
-// Login admin - VERSION CORRIGEE
+// ✅ LOGIN ADMIN CORRIGE (version simplifiée)
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    console.log('Tentative de connexion:', { username, password: '***' });
+    console.log('🔐 Tentative de connexion reçue:', { username, password });
     
-    // Solution temporaire : mot de passe en clair pour debug
-    if (username === 'admin' && password === 'admin123') {
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       const token = jwt.sign({ username, role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
       
       res.cookie('token', token, {
@@ -186,13 +188,14 @@ app.post('/api/admin/login', async (req, res) => {
         maxAge: 12 * 60 * 60 * 1000 // 12 heures
       });
 
+      console.log('✅ Connexion réussie pour:', username);
       res.json({ success: true, message: 'Connexion réussie' });
     } else {
-      console.log('Échec connexion - Username:', username, 'Password attendu: admin123');
+      console.log('❌ Échec connexion - Username:', username, 'Password reçu:', password);
       res.status(401).json({ error: 'Identifiants incorrects' });
     }
   } catch (error) {
-    console.error('Erreur de connexion:', error);
+    console.error('💥 Erreur de connexion:', error);
     res.status(500).json({ error: 'Erreur de connexion' });
   }
 });
@@ -330,8 +333,9 @@ app.get('/', (req, res) => {
 async function startServer() {
   await initializeDataFiles();
   
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+    console.log(`🔐 Identifiants admin: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
     console.log(`📧 Plateforme de recrutement Umoja Wetu opérationnelle`);
   });
 }
