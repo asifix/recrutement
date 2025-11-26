@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Admin - Umoja Wetu</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="admin-title">
+                <div class="logo-container">
+                    <div class="logo-icon">🤝</div>
+                    <h1>Tableau de Bord Admin - Umoja Wetu</h1>
+                </div>
+            </div>
+            <div class="admin-actions">
+                <span id="adminWelcome">Bienvenue, Admin</span>
+                <button id="logoutBtn" class="btn-secondary">Déconnexion</button>
+            </div>
+        </header>
+
+        <nav class="admin-nav">
+            <button class="nav-btn active" data-tab="candidates">Candidatures</button>
+            <button class="nav-btn" data-tab="offer">Offre d'emploi</button>
+            <button class="nav-btn" data-tab="about">À propos</button>
+        </nav>
+
+        <main class="admin-main">
+            <!-- Section Candidatures -->
+            <section id="candidates-tab" class="tab-content active">
+                <div class="section-header">
+                    <h2>Gestion des Candidatures</h2>
+                    <div class="section-actions">
+                        <button id="exportCsvBtn" class="btn-secondary">Exporter CSV</button>
+                        <button id="refreshBtn" class="btn-primary">Actualiser</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total</h3>
+                        <span id="totalCandidates" class="stat-number">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Nouvelles</h3>
+                        <span id="newCandidates" class="stat-number">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>En cours</h3>
+                        <span id="pendingCandidates" class="stat-number">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Terminées</h3>
+                        <span id="completedCandidates" class="stat-number">0</span>
+                    </div>
+                </div>
+
+                <div class="candidates-list">
+                    <div class="table-container">
+                        <table id="candidatesTable">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Email</th>
+                                    <th>Téléphone</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="candidatesTableBody">
+                                <!-- Les candidatures seront chargées ici -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Offre d'emploi -->
+            <section id="offer-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Gestion de l'offre d'emploi</h2>
+                </div>
+
+                <form id="offerForm" class="content-form">
+                    <div class="form-group">
+                        <label for="offerTitle">Titre du poste *</label>
+                        <input type="text" id="offerTitle" name="title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="offerLocation">Lieu *</label>
+                        <input type="text" id="offerLocation" name="location" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="offerContract">Type de contrat *</label>
+                        <input type="text" id="offerContract" name="contract" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="offerStartDate">Démarrage *</label>
+                        <input type="text" id="offerStartDate" name="startDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="offerContent">Description du poste *</label>
+                        <textarea id="offerContent" name="content" rows="6" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Profil recherché (une par ligne) *</label>
+                        <textarea id="offerRequirements" name="requirements" rows="8" placeholder="Diplôme requis&#10;Expérience requise&#10;Compétences nécessaires"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Mettre à jour l'offre</button>
+                </form>
+            </section>
+
+            <!-- Section À propos -->
+            <section id="about-tab" class="tab-content">
+                <div class="section-header">
+                    <h2>Gestion de la page À propos</h2>
+                </div>
+
+                <form id="aboutForm" class="content-form">
+                    <div class="form-group">
+                        <label for="aboutContent">Description de l'organisation *</label>
+                        <textarea id="aboutContent" name="content" rows="8" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aboutMission">Mission *</label>
+                        <textarea id="aboutMission" name="mission" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aboutFounder">Fondateur *</label>
+                        <input type="text" id="aboutFounder" name="founder" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aboutFounded">Année de fondation *</label>
+                        <input type="text" id="aboutFounded" name="founded" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aboutLocation">Lieu *</label>
+                        <input type="text" id="aboutLocation" name="location" required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Mettre à jour</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de détail candidat -->
+    <div id="candidateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Détails de la candidature</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="candidateDetails">
+                    <!-- Les détails seront chargés ici -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
