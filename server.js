@@ -11,13 +11,13 @@ const path = require('path');
 
 const app = express();
 
-// ✅ CORRECTION DU PORT POUR RENDER
+// ✅ PORT CORRIGE POUR RENDER
 const PORT = process.env.PORT || 10000;
 
-// ✅ IDENTIFIANTS DIRECTS POUR DEBUG
-const JWT_SECRET = 'votre_secret_super_securise_changez_moi';
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'admin123'; // Mot de passe en clair temporairement
+// ✅ VARIABLES D'ENVIRONNEMENT AVEC VALEURS PAR DÉFAUT POUR DEBUG
+const JWT_SECRET = process.env.JWT_SECRET || 'votre_secret_super_securise_changez_moi';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'; // ✅ Mot de passe en clair pour debug
 
 // Middleware
 app.use(helmet({
@@ -171,13 +171,19 @@ app.post('/api/submit', upload.fields([
   }
 });
 
-// ✅ LOGIN ADMIN CORRIGE (version simplifiée)
+// ✅ LOGIN ADMIN CORRIGE (version simplifiée avec variables d'environnement)
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     
-    console.log('🔐 Tentative de connexion reçue:', { username, password });
+    console.log('🔐 Tentative de connexion reçue:', { 
+      username, 
+      passwordReceived: '***', 
+      expectedUsername: ADMIN_USERNAME,
+      usingEnv: !!process.env.ADMIN_PASSWORD
+    });
     
+    // ✅ Comparaison directe sans bcrypt pour debug
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       const token = jwt.sign({ username, role: 'admin' }, JWT_SECRET, { expiresIn: '12h' });
       
@@ -191,7 +197,11 @@ app.post('/api/admin/login', async (req, res) => {
       console.log('✅ Connexion réussie pour:', username);
       res.json({ success: true, message: 'Connexion réussie' });
     } else {
-      console.log('❌ Échec connexion - Username:', username, 'Password reçu:', password);
+      console.log('❌ Échec connexion:', {
+        usernameMatch: username === ADMIN_USERNAME,
+        passwordMatch: password === ADMIN_PASSWORD,
+        expectedPassword: ADMIN_PASSWORD
+      });
       res.status(401).json({ error: 'Identifiants incorrects' });
     }
   } catch (error) {
@@ -336,6 +346,7 @@ async function startServer() {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Serveur démarré sur le port ${PORT}`);
     console.log(`🔐 Identifiants admin: ${ADMIN_USERNAME} / ${ADMIN_PASSWORD}`);
+    console.log(`🔧 Utilise les variables d'environnement: ${!!process.env.ADMIN_PASSWORD}`);
     console.log(`📧 Plateforme de recrutement Umoja Wetu opérationnelle`);
   });
 }
